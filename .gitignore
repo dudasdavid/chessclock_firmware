@@ -1,0 +1,2 @@
+firmware/F103/Debug/*
+!firmware/F103/Debug/F103_chessclock.bin
