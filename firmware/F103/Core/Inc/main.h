@@ -62,6 +62,12 @@ void Error_Handler(void);
 #define LED_GPIO_Port GPIOC
 #define CLOCK_RESET_Pin GPIO_PIN_5
 #define CLOCK_RESET_GPIO_Port GPIOA
+#define BUTTON_PLAY_Pin GPIO_PIN_14
+#define BUTTON_PLAY_GPIO_Port GPIOB
+#define BUTTON__Pin GPIO_PIN_8
+#define BUTTON__GPIO_Port GPIOA
+#define BUTTON_A10_Pin GPIO_PIN_10
+#define BUTTON_A10_GPIO_Port GPIOA
 #define SENSOR_IN_Pin GPIO_PIN_3
 #define SENSOR_IN_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

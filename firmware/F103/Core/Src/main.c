@@ -212,6 +212,12 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(CLOCK_RESET_GPIO_Port, CLOCK_RESET_Pin, GPIO_PIN_SET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(BUTTON_PLAY_GPIO_Port, BUTTON_PLAY_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, BUTTON__Pin|BUTTON_A10_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -225,6 +231,20 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(CLOCK_RESET_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BUTTON_PLAY_Pin */
+  GPIO_InitStruct.Pin = BUTTON_PLAY_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(BUTTON_PLAY_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : BUTTON__Pin BUTTON_A10_Pin */
+  GPIO_InitStruct.Pin = BUTTON__Pin|BUTTON_A10_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : SENSOR_IN_Pin */
   GPIO_InitStruct.Pin = SENSOR_IN_Pin;
@@ -297,12 +317,48 @@ void StartUSBTask(void const * argument)
 	  }
 	  // Reset clock
 	  else if ((rxBuf[0] == 'R') && (rxBuf[1] == 'S') && (rxBuf[2] == 'T') && (rxBuf[3] == '\r')){
-		sprintf(txBuf, "OK;%s\r\n", rxBuf);
+		sprintf(txBuf, "OK;%s", rxBuf);
 		Len = SizeofCharArray((char*)txBuf);
 		CDC_Transmit_FS((uint8_t*)txBuf, Len);
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 		osDelay(100);
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+	  }
+	  // Short press play button
+	  else if ((rxBuf[0] == 'S') && (rxBuf[1] == 'P') && (rxBuf[2] == 'P') && (rxBuf[3] == '\r')){
+		sprintf(txBuf, "OK;%s", rxBuf);
+		Len = SizeofCharArray((char*)txBuf);
+		CDC_Transmit_FS((uint8_t*)txBuf, Len);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
+		osDelay(100);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+	  }
+	  // Long press play button
+	  else if ((rxBuf[0] == 'L') && (rxBuf[1] == 'P') && (rxBuf[2] == 'P') && (rxBuf[3] == '\r')){
+		sprintf(txBuf, "OK;%s", rxBuf);
+		Len = SizeofCharArray((char*)txBuf);
+		CDC_Transmit_FS((uint8_t*)txBuf, Len);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
+		osDelay(3000);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+	  }
+	  // Short press minus button
+	  else if ((rxBuf[0] == 'S') && (rxBuf[1] == 'P') && (rxBuf[2] == 'M') && (rxBuf[3] == '\r')){
+		sprintf(txBuf, "OK;%s", rxBuf);
+		Len = SizeofCharArray((char*)txBuf);
+		CDC_Transmit_FS((uint8_t*)txBuf, Len);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+		osDelay(100);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+	  }
+	  // Short press plus button
+	  else if ((rxBuf[0] == 'S') && (rxBuf[1] == 'P') && (rxBuf[2] == 'L') && (rxBuf[3] == '\r')){
+		sprintf(txBuf, "OK;%s", rxBuf);
+		Len = SizeofCharArray((char*)txBuf);
+		CDC_Transmit_FS((uint8_t*)txBuf, Len);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
+		osDelay(100);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
 	  }
 	  // Read sensor
 	  else if ((rxBuf[0] == 'R') && (rxBuf[1] == 'D') && (rxBuf[2] == 'S') && (rxBuf[3] == '\r')){
@@ -313,7 +369,7 @@ void StartUSBTask(void const * argument)
 	  }
 	  // Unrecognized command
 	  else{
-		sprintf(txBuf, "ERR;%s\r\n", rxBuf);
+		sprintf(txBuf, "ERR;%s", rxBuf);
 		Len = SizeofCharArray((char*)txBuf);
 		CDC_Transmit_FS((uint8_t*)txBuf, Len);
 	  }
